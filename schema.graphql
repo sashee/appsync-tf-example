@@ -1,0 +1,48 @@
+type Todo @aws_auth(cognito_groups: ["admin", "user"]){
+	name: String
+	checked: Boolean
+	created: AWSDateTime
+}
+
+type User @aws_auth(cognito_groups: ["admin", "user"]){
+	id: ID
+	name: String
+	todos(count: Int, nextToken: String): PaginatedTodos!
+	@aws_auth(cognito_groups: ["admin", "user"])
+}
+
+type PaginatedTodos @aws_auth(cognito_groups: ["admin", "user"]){
+	items: [Todo!]!
+	nextToken: String
+}
+
+type PaginatedUsers @aws_auth(cognito_groups: ["admin", "user"]){
+	items: [User!]!
+	nextToken: String
+}
+
+type Subscription {
+	newTodo: Todo
+	@aws_subscribe(mutations: ["addTodo"])
+	@aws_auth(cognito_groups: ["admin", "user"])
+}
+
+type Mutation {
+	addTodo(userId: ID!, name: String!): Todo!
+	@aws_auth(cognito_groups: ["admin", "user"])
+}
+
+type Query {
+	user(id: ID): User
+	@aws_auth(cognito_groups: ["admin"])
+	allUsers(count: Int, nextToken: String): PaginatedUsers!
+	@aws_auth(cognito_groups: ["admin"])
+	me: User
+	@aws_auth(cognito_groups: ["user"])
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+	subscription: Subscription
+}
