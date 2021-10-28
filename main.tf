@@ -47,8 +47,11 @@ resource "aws_appsync_graphql_api" "appsync" {
   schema              = file("schema.graphql")
   authentication_type = "AMAZON_COGNITO_USER_POOLS"
   user_pool_config {
-    default_action = "DENY"
+    default_action = "ALLOW"
     user_pool_id   = module.cognito.user_pool_id
+  }
+  additional_authentication_provider {
+    authentication_type = "AWS_IAM"
   }
   log_config {
     cloudwatch_logs_role_arn = aws_iam_role.appsync_logs.arn
