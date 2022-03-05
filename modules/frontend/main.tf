@@ -16,7 +16,7 @@ locals {
   }
 }
 
-resource "aws_s3_bucket_object" "frontend_object" {
+resource "aws_s3_object" "frontend_object" {
   for_each = fileset("${path.module}/assets", "*")
   key      = each.value
   source   = "${path.module}/assets/${each.value}"
@@ -27,7 +27,7 @@ resource "aws_s3_bucket_object" "frontend_object" {
   cache_control = "no-store, max-age=0"
 }
 
-resource "aws_s3_bucket_object" "frontend_config" {
+resource "aws_s3_object" "frontend_config" {
   key     = "config.js"
   content = <<EOF
 export const cognitoUserPoolId = "${var.cognito_user_pool_id}";
